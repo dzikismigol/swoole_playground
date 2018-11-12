@@ -19,15 +19,30 @@ $server->on("start", function (HttpServer $server) use ($kernel) {
 });
 
 $server->on("request", function (Request $request, Response $response) use ($kernel) {
-    var_dump($request);
-    $kernel->reboot($kernel->getCacheDir());
+    //    var_dump($request);
+    //    $kernel->reboot();
+    $kernel->boot();
+    /** @var \Symfony\Component\Routing\RouterInterface $router */
+    $router = $kernel->getContainer()->get('router');
     echo "Request came in" . PHP_EOL;
-    $symfonyResponse = $kernel->handle(mapRequest($request));
+    var_dump($router->getRouteCollection()->count());
+    //    var_dump($router->match(""));
+    //    var_dump($router->match("/"));
+    echo PHP_EOL;
 
-    foreach ($symfonyResponse->headers->allPreserveCaseWithoutCookies() as $name => $value) {
-        $response->header($name, $value);
+    try {
+        $symfonyRequest  = mapRequest($request);
+        $symfonyResponse = $kernel->handle($symfonyRequest);
+
+        foreach ($symfonyResponse->headers->allPreserveCaseWithoutCookies() as $name => $value) {
+            $response->header($name, $value);
+        }
         $response->status($symfonyResponse->getStatusCode());
         $response->end($symfonyResponse->getContent());
+        $kernel->terminate($symfonyRequest, $symfonyResponse);
+    } catch (\Throwable $t) {
+        echo "Exception caught. " . $t->getMessage() . PHP_EOL . "Class: " . get_class($t) . PHP_EOL . PHP_EOL . $t->getTraceAsString() . PHP_EOL . PHP_EOL;
+        echo PHP_EOL . $t->getPrevious()->getTraceAsString();
     }
 
 });
@@ -37,6 +52,8 @@ $server->start();
 
 function mapRequest(Request $request): SymfonyRequest
 {
+
+    SymfonyRequest::create()
     return new SymfonyRequest(
         $request->get ?? [],
         $request->post ?? [],

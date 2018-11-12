@@ -1,5 +1,11 @@
 {
+    "beberlei/assert": {
+        "version": "v3.1.0"
+    },
     "eaglewu/swoole-ide-helper": {
+        "version": "dev-master"
+    },
+    "k911/swoole-bundle": {
         "version": "dev-master"
     },
     "psr/cache": {
@@ -76,6 +82,9 @@
     },
     "symfony/polyfill-mbstring": {
         "version": "v1.10.0"
+    },
+    "symfony/process": {
+        "version": "4.1.x-dev"
     },
     "symfony/routing": {
         "version": "4.2",
